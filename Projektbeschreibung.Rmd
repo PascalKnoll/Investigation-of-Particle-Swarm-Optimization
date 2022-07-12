@@ -1,0 +1,276 @@
+---
+title: "Projektbeschreibung - AOT"
+author: "Martin Zaefferer"
+output:
+  pdf_document: default
+  html_document: 
+    theme: readable
+    toc: yes
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+    highlight: pygments
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Einführung
+Diese Projektaufgabe ist Grundlage für die Prüfungsleistung der Lehreinheit Applied Optimization Techniques.
+
+## Aufgabenstellung
+- In einer Gruppenarbeit soll ein Problem aus dem Bereich des Machine Learnings 
+untersucht und mit Optimierungsalgorithmen gelöst werden: Maximum Likelihood Estimation (MLE)
+für Gaußsche Prozessmodelle.
+- Jede Gruppe (3-4 Personen) untersucht mindestens einen spezifischen Optimierungsalgorithmus und vergleicht diesen mit der Defaultlösung (siehe weiter unten im Dokument).
+- Wer möchte, kann selbst einen Algorithmus wählen (dann aber bitte absprechen,
+damit nicht alle das gleiche machen). Sonst wird ein Algorithmus vorgegeben.
+Eine Liste möglicher Algorithmen ist am Ende des Dokumentes zu finden.
+- Mögliche Fragestellungen für die Untersuchung:
+    - Wie funktioniert der Algorithmus?
+    - Ist der Algorithmus für das Problem geeignet?
+    - Wie erfolgt die Anwendung auf das Problem?
+    - \textbf{Empirische Untersuchung:} Wie *gut* funktioniert der Algorithmus?
+    - ... im Vergleich zur Defaultlösung?
+    - Wie könnte die Güte verbessert werden? (z.B. Änderung der Konfiguration, andere Algorithmen,...)
+    - Was passiert, wenn sich das Problem ändert (andere Daten, höhere Dimension, mehr Beobachtungen, ...)
+- Jede Gruppe erstellt eine schriftliche, wissenschaftliche Ausarbeitung (Projektbericht) im Umfang von 3-6 Seiten pro Person (also bei 3 Personen z.B. insgesamt 9 - 18 Seiten).
+    - Seitenzahl ohne Abbildungen / Tabellen / etc.
+- Deadline für Einreichung: 15.08.2022
+- Einreichung elektronisch als PDF, z.B. per Mail an [zaefferer\@dhbw-ravensburg.de](mailto:zaefferer@dhbw-ravensburg.de){.email}
+
+# Details zum MLE Problem
+Supervised Machine Learning (ML) Modelle versuchen einen Zusammenhang zwischen
+Eingaben und Ausgabevariable zu erlernen. Wir betrachten hier die Regression
+(Ausgabevariable ist reellwertig).
+
+Viele ML Modelle ermöglichen eine statistische oder probabilistische Interpretation.
+Das bedeutet unter anderem, dass das Modell eine Wahrscheinlichkeit (Likelihood) für beobachtete Daten abschätzen kann.
+Diese Wahrscheinlichkeitsschätzung kann auch für das Training des Modells verwendet werden:
+die Parameter des Modells werden so gewählt, dass die Wahrscheinlichkeit der beobachteten
+Daten maximal wird. Dies wird Maximum Likelihood Estimation genannt
+und stellt ein Optimierungsproblem dar, bei dem die Parameter des Modells
+die zu optimierenden Variablen sind. 
+Die Likelihood stellt den Zielfunktionswert dar.
+
+Wir betrachten hier ein Gaußsches Prozessmodell (GPM) (auch: Gaussian process regression oder Kriging).
+
+# Demonstration
+
+Als Grundlage brauchen wir erst ein paar Datenpunkte, die wir hier mit
+einer einfachen Testfunktion erzeugen:
+```{r}
+set.seed(1)
+n <- 70
+lower <- c(-2.5,-1.5)
+upper <- c(1.5,2.5)
+x <- cbind(runif(n,lower[1],upper[1]),runif(n,lower[2],upper[2]))
+f <- function(x){
+  20 + x[,1]^2 + x[,2]^2 - 10*(cos(2*pi*x[,1]) + cos(2*pi*x[,2]))
+}
+y <- f(x)
+
+## Alternative mit einer anderen Testfunktion:
+#set.seed(1)
+#n <- 50
+#lower <- c(-5,0)
+#upper <- c(10,15)
+#x <- cbind(runif(n,lower[1],upper[1]),runif(n,lower[2],upper[2]))
+#f <- function(x){
+#  (x[,2] - 5.1/(4 * pi^2) * (x[,1]^2) + 5/pi * x[,1] - 6)^2 + 
+#            10 * (1 - 1/(8 * pi)) * cos(x[,1]) + 10
+#}
+#y <- f(x)
+```
+
+Hier soll modelliert werden, wie y von x.1 und x.2 abhängt (Spalten `x`).
+Wir können uns die erzeugten Daten anschauen mit:
+
+```{r}
+df <- data.frame(x=x,y=y)
+require(ggplot2)
+require(viridis)
+ggplot(data=df,aes(x=x.1,y=x.2,colour=y)) +
+  geom_point() +
+  scale_colour_viridis(option="A")
+```
+
+Mit dem Paket SPOT können wir ein GPM erzeugen ...
+
+```{r}
+require(SPOT)
+model <- buildKriging(x,matrix(y,,1))
+```
+
+... und auch visualisieren ...
+```{r}
+nplot_dim <- 100
+xplot <- expand.grid(seq(from=lower[1],to=upper[1],length.out=nplot_dim),
+               seq(from=lower[2],to=upper[2],length.out=nplot_dim))
+yplot <- predict(model,xplot)
+df <- data.frame(x.1=xplot$Var1,x.2=xplot$Var2,y=yplot)
+ggplot(data=df,aes(x=x.1,y=x.2,z=y)) +
+  geom_contour_filled(bins=50,show.legend=FALSE) +
+  scale_fill_viridis(option="A",discrete = T)
+```
+
+Ups, das sieht eigenartig aus.
+Um zu prüfen, ob das Ergebnis 'gut' ist, können wir uns erstmal anschauen, wie die Testfunktion tatsächlich aussehen soll.
+
+```{r}
+yplot2 <- f(xplot)
+df <- data.frame(x.1=xplot$Var1,x.2=xplot$Var2,y=yplot2)
+ggplot(data=df,aes(x=x.1,y=x.2,z=y)) +
+  geom_contour_filled(bins=50,show.legend=FALSE) +
+  scale_fill_viridis(option="A",discrete = T)
+```
+Wie zu sehen ist, gibt es eine deutliche Abweichung zwischen Modell und Testfunktion.
+Wir können uns zusätzlich anschauen, wie gut MLE funktioniert hat.
+MLE wurde im Hintergrund ausgeführt, während des `buildKriging` 
+Aufrufs.
+
+Der beste gefundene Likelihood Wert ist:
+```{r}
+model$like
+```
+Anmerkung: das ist die konzentrierte, negierte, und log-transformierte Likelihood.
+Kleinere Werte sind besser.
+
+
+Der Wert sollte schlechter (größer) werden, wenn wir die Zahl der Zielfunktionsauswertungen reduzieren.
+
+```{r}
+model <- buildKriging(x,matrix(y,,1),control=list(
+  budgetAlgTheta=1
+))
+model$like
+```
+
+
+```{r}
+yplot <- predict(model,xplot)
+df <- data.frame(x.1=xplot$Var1,x.2=xplot$Var2,y=yplot)
+ggplot(data=df,aes(x=x.1,y=x.2,z=y)) +
+  geom_contour_filled(bins=50,show.legend=FALSE) +
+  scale_fill_viridis(option="A",discrete = T)
+```
+
+Wie können wir dieses Modell verbessern? Wir könnten mehr Daten sammeln
+(ist nicht immer möglich oder sinnvoll). Oder wir versuchen, dass Modell
+besser zu parametrisieren, z.B. mit einem anderen Optimierungsalgorithmus.
+
+Im oben gezeigten Beispiel wird der Defaultalgorithmus verwendet, Differential Evolution.
+In Ihrer Projektarbeit sollen Sie einen anderen Algorithmus anwenden / testen. 
+Der folgende Code zeigt, wie Sie dabei vorgehen können, am Beispiel von Random Search.
+Zuerst implementieren wir Random Search:
+
+```{r}
+uniformRandomSearch <- function (x = NULL, fun, lower, upper, 
+                                 control = list(), ...) {
+  con <- list(funEvals = 200) # default limit on function evaluations
+  con[names(control)] <- control
+  control <- con  
+  
+  npar <- length(lower) # number of parameters
+  xtest <- matrix(runif(control$funEvals*npar,
+                        lower,upper),,npar,byrow=TRUE)
+  ytest <- matrix(fun(xtest, ...), 1) 
+  ## important note: ... are arguments passed
+  ## from the calling function directly to fun 
+  ## (not touched by uniformRandomSearch)
+  best_index <- which.min(ytest)
+  print(xtest[best_index,])
+  list(
+    xbest = xtest[best_index,],
+    ybest = ytest[best_index],
+    count = nrow(xtest)
+  )
+    
+
+### Alternative example, using a different algorithm instead of random search
+  #result <- nloptr::stogo(x0=runif(length(lower),lower,upper),
+  #                        fn=fun,lower = lower, upper=upper,...)
+  #list(
+  #  xbest = result$par, 
+  #  ybest = result$value, 
+  #  count = 0
+  #)
+}
+```
+
+Als nächstes trainieren wir das Modell mit Random Search.
+
+```{r}
+model <- buildKriging(x,matrix(y,,1),control=list(
+  algTheta=uniformRandomSearch
+))
+model$like
+model$Theta
+model$Lambda
+yplot <- predict(model,xplot)
+df <- data.frame(x.1=xplot$Var1,x.2=xplot$Var2,y=yplot)
+ggplot(data=df,aes(x=x.1,y=x.2,z=y)) +
+  geom_contour_filled(bins=50,show.legend=FALSE) +
+  scale_fill_viridis(option="A",discrete = T)
+```
+
+Das sieht schon deutlich besser aus, bzw. ähnelt der 'ground-truth' (der Testfunktion). 
+Zudem ist der Likelihood-Wert geringer (d.h. besser).
+
+Hinweis: Wenn Sie die Zielfunktion (`fun`) genauer betrachten wollen, können Sie z.B. folgendes ausführen:
+
+```{r}
+justPlotNothingElse <- function (x = NULL, fun, lower, upper, 
+                                 control = list(), ...) {
+  test_var1 <- seq(from=lower[1],to=upper[1],length.out=100)
+  xtest <- cbind(test_var1, #first variable is varied from min to max value
+                 (upper[2]-lower[2])/2, #other two variables are set to mean value
+                 (upper[3]-lower[3])/2)
+  ytest <- fun(xtest, ...) #evaluate all 
+  plot(xtest[,1],ytest,type="l")
+  
+  list(
+    xbest = lower,
+    ybest = 0
+  ) #return something, not meaningful in this case
+}
+doNotUseThisModel <- buildKriging(x,matrix(y,,1),control=list(
+  algTheta=justPlotNothingElse
+))
+```
+
+# Algorithmenwahl
+Mögliche Algorithmen:
+
+- L-BFGS-B (`stats::optim`, `nloptr::lbfgs`)
+- DIRECT-L _mit randomization_ (`nloptr::directL`, mit randomized=TRUE)
+- BOBYQA (`nloptr::bobyqa`)
+- NEWUOA (`nloptr::newuoa`)
+- ISRES (`nloptr::isres`)
+- SA oder GenSA (`stats::optim`, `GenSA::GenSA`) 
+- CMA-ES (`cmaes::cma_es`)
+- MLSL (`nloptr::mlsl`)
+- CRS2 (`nloptr::crs2lm`)
+- STOGO (`nloptr::stogo`)
+- Sub-Plex (`nloptr::sbplx`)
+- PSO (`pso::psoptim`, `psoptim::psoptim`)
+
+# Hinweis
+
+Bitte überlegen Sie, mit welchem Maß Sie den gewählten Algorithmus
+und den Defaultalgorithmus vergleichen wollen.
+Berücksichtigen Sie auch, dass verschiedene Zufallseinflüsse
+vorliegen (Algorithmus, Daten für die Modellierung, ...).
+
+Dies bedeutet: Auswertungen sollten wiederholt werden, um
+zu vermeiden, dass beobachtete Unterschiede nur Zufallstreffer sind.
+
+# Anmerkungen
+
+Auch negative Ergebnisse sind wertvole Informationen (d.h., wenn ein Algorithmus
+nicht funktioniert, bzw. nicht gut genug funktioniert).
+Berichten Sie also auch gern über negative Ergebnisse.
+Wichtig ist, zu verstehen, warum der Algorithmus nicht funktioniert 
+und über alternative Lösungsmöglichkeiten nachzudenken.
