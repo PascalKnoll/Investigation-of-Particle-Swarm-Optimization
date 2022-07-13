@@ -1,6 +1,10 @@
 from sklearn.gaussian_process import GaussianProcessRegressor
 import pyswarms as ps
 import numpy as np
+from pyswarms.utils.plotters import (plot_cost_history, plot_contour, plot_surface)
+from pyswarms.utils.plotters.formatters import Mesher
+from IPython.display import Image
+
 
 class GPR:
     def __init__(self, c1: float=0.5, c2: float=0.3, w: float=0.9, n_optim_steps: int=10, n_particles: int=10, n_restarts_optimizer: int=10) -> None:
@@ -46,6 +50,15 @@ class GPR:
         """
         optimizer = ps.single.GlobalBestPSO(n_particles=self.n_particles, dimensions=len(init_theta), options=self.options, bounds=bounds)
         f_opt, theta_opt = optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
+        
+                
+        m = Mesher(func=obj_func)
+        # Make animation
+        animation = plot_contour(pos_history=optimizer.pos_history,
+                        mesher=m,
+                        mark=(0,0))
+        animation.save('mymovie.mp4')
+
         return theta_opt, f_opt
     
 def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:

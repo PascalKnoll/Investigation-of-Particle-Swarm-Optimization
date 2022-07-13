@@ -1,0 +1,1 @@
+2022-07-12 15:28:04,754 - pyswarms.single.global_best - INFO - Optimize for 1000 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
