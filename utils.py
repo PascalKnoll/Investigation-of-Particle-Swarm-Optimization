@@ -33,9 +33,7 @@ class GPR(BaseEstimator):
                 'c1': np.linspace(0.1, 1, 5),
                 'c2': np.linspace(0.1, 1, 5),
                 'w': np.linspace(0.1, 1, 5),
-                'n_optim_steps': np.linspace(1, 10, 5),
-                'n_particles': np.linspace(1, 10, 5),
-                'n_restarts_optimizer': np.linspace(1, 10, 5)
+                'n_particles': np.linspace(1, 10, 5)
             }
         
         clf = GridSearchCV(estimator=self, param_grid=grid, verbose=1, scoring=self._scoring, n_jobs=1, error_score='raise')
@@ -55,6 +53,8 @@ class GPR(BaseEstimator):
         if X.shape[0] < X.shape[1]: X = X.T
         if len(y.shape) == 1: y = y[..., None]
         self.model = self.model.fit(X, y)
+
+        return self
 
     def predict(self, X: np.array) -> np.array:
         """
