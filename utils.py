@@ -85,7 +85,7 @@ class GPR(BaseEstimator):
         return theta_opt, f_opt
 
 
-    def pso_optimization(self, obj_function, optimizer):
+    def visualize_training(self, obj_function, optimizer):
         m = Mesher(func=obj_function)
         # Make animation
         animation = plot_contour(pos_history=optimizer.pos_history,
@@ -98,9 +98,6 @@ class GPR(BaseEstimator):
     def _scoring(self, estimator, X, y):
         y_pred = estimator.predict(X)
         return mean_squared_error(y, y_pred)
-    
-
-    
 
     def plot_history(optimizer):
         plot_cost_history(cost_history=optimizer.cost_history)
@@ -109,12 +106,21 @@ class GPR(BaseEstimator):
 def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
     return np.mean((y_true - y_pred) ** 2)
 
+
 def visualize(X, y, title=None):
     plt.scatter(X[0], X[1], c=y)
     plt.colorbar()
     if title:
         plt.title(title)
     plt.show()
+
+def vis_mashgrid(Z):
+    m = np.arange(-2.5,1.5,0.001)
+    p = np.arange(-1.5,2.5,0.001)
+    X = np.array(np.meshgrid(m, p))
+    plt.pcolormesh(m,p,Z)
+    plt.colorbar()
+
 
 def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0):
     """
