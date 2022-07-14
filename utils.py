@@ -4,6 +4,7 @@ import numpy as np
 from pyswarms.utils.plotters import (plot_cost_history, plot_contour, plot_surface)
 from pyswarms.utils.plotters.formatters import Mesher
 from IPython.display import Image
+import matplotlib.pyplot as plt
 
 
 class GPR:
@@ -19,10 +20,11 @@ class GPR:
         self.options = {'c1': c1, 'c2': c2, 'w': w}
         self.n_optim_steps = n_optim_steps
         self.n_particles = n_particles
+        self.optimizer = None
 
         self.model = GaussianProcessRegressor(n_restarts_optimizer=n_restarts_optimizer, optimizer=self._optim)
 
-    def fit(self, X: np.array, y: np.array) -> None:
+    def fit(self, X: np.array, y: np.array):
         """
         :param X: training data
         :param y: training labels
@@ -49,17 +51,24 @@ class GPR:
         :return: best theta
         """
         optimizer = ps.single.GlobalBestPSO(n_particles=self.n_particles, dimensions=len(init_theta), options=self.options, bounds=bounds)
+        self.optimizer = optimizer
         f_opt, theta_opt = optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
-        
-                
-        m = Mesher(func=obj_func)
+
+        return theta_opt, f_opt
+
+
+    def pso_optimization(self, obj_function, optimizer):
+        m = Mesher(func=obj_function)
         # Make animation
         animation = plot_contour(pos_history=optimizer.pos_history,
                         mesher=m,
                         mark=(0,0))
         animation.save('mymovie.mp4')
-
-        return theta_opt, f_opt
     
+
+    def plot_history(optimizer):
+        plot_cost_history(cost_history=optimizer.cost_history)
+        plt.show()
+
 def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
     return np.mean((y_true - y_pred) ** 2)
