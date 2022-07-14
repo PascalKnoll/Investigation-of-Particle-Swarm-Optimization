@@ -81,8 +81,11 @@ class GPR(BaseEstimator):
         """
         
         f_opt, theta_opt = self.optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
-
         return theta_opt, f_opt
+
+    def _scoring(self, estimator, X, y):
+        y_pred = estimator.predict(X)
+        return mean_squared_error(y, y_pred)
 
 
     def visualize_training(self, obj_function, optimizer):
