@@ -3,7 +3,7 @@ from sklearn.model_selection import GridSearchCV, GroupKFold
 from sklearn.base import BaseEstimator
 import pyswarms as ps
 import numpy as np
-from pyswarms.utils.plotters import (plot_cost_history, plot_contour, plot_surface)
+from pyswarms.utils.plotters import plot_cost_history, plot_contour, plot_surface
 from pyswarms.utils.plotters.formatters import Mesher
 from IPython.display import Image
 import matplotlib.pyplot as plt
@@ -79,13 +79,14 @@ class GPR(BaseEstimator):
         :return: best theta
         """
         optimizer = ps.single.GlobalBestPSO(n_particles=self.n_particles, dimensions=len(init_theta), options=self.options, bounds=bounds)
+        self.optimizer = optimizer
         f_opt, theta_opt = optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
+
         return theta_opt, f_opt
 
-        
-    def ka_was_pascal_hier_macht(self):    
-        optimizer = "hä"          
-        m = Mesher(func=obj_func)
+
+    def pso_optimization(self, obj_function, optimizer):
+        m = Mesher(func=obj_function)
         # Make animation
         animation = plot_contour(pos_history=optimizer.pos_history,
                         mesher=m,
@@ -98,6 +99,12 @@ class GPR(BaseEstimator):
         y_pred = estimator.predict(X)
         return mean_squared_error(y, y_pred)
     
+
+    
+
+    def plot_history(optimizer):
+        plot_cost_history(cost_history=optimizer.cost_history)
+        plt.show()
 
 def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
     return np.mean((y_true - y_pred) ** 2)
