@@ -30,6 +30,7 @@ class GPR(BaseEstimator):
         self.n_restarts_optimizer = n_restarts_optimizer
 
         self.model = GaussianProcessRegressor(n_restarts_optimizer=n_restarts_optimizer, optimizer=self._optim)
+        self.optimizer = ps.single.GlobalBestPSO(n_particles=self.n_particles, dimensions=2, options=self.options)
 
     
     def hyper_optimize(self, X, y, grid=None):
@@ -41,7 +42,7 @@ class GPR(BaseEstimator):
                 'n_particles': np.linspace(1, 10, 5)
             }
         
-        clf = GridSearchCV(estimator=self, param_grid=grid, verbose=1, scoring=self._scoring, n_jobs=1, error_score='raise')
+        clf = GridSearchCV(estimator=self, param_grid=grid, verbose=1, scoring=self.model._scoring, n_jobs=1, error_score='raise')
         X = X.T
         y = y[..., None]
         clf = clf.fit(X, y)
@@ -78,9 +79,8 @@ class GPR(BaseEstimator):
         :param bounds: bounds of theta
         :return: best theta
         """
-        optimizer = ps.single.GlobalBestPSO(n_particles=self.n_particles, dimensions=len(init_theta), options=self.options, bounds=bounds)
-        self.optimizer = optimizer
-        f_opt, theta_opt = optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
+        
+        f_opt, theta_opt = self.optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
 
         return theta_opt, f_opt
 
@@ -94,10 +94,7 @@ class GPR(BaseEstimator):
         animation.save('mymovie.mp4')
 
         
-        
-    def _scoring(self, estimator, X, y):
-        y_pred = estimator.predict(X)
-        return mean_squared_error(y, y_pred)
+
 
     def plot_history(optimizer):
         plot_cost_history(cost_history=optimizer.cost_history)
@@ -113,6 +110,7 @@ def visualize(X, y, title=None):
     if title:
         plt.title(title)
     plt.show()
+
 
 def vis_mashgrid(Z):
     m = np.arange(-2.5,1.5,0.001)
