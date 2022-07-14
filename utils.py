@@ -3,6 +3,11 @@ from sklearn.model_selection import GridSearchCV, GroupKFold
 from sklearn.base import BaseEstimator
 import pyswarms as ps
 import numpy as np
+from pyswarms.utils.plotters import (plot_cost_history, plot_contour, plot_surface)
+from pyswarms.utils.plotters.formatters import Mesher
+from IPython.display import Image
+import matplotlib.pyplot as plt
+
 
 class GPR(BaseEstimator):
     def __init__(self, c1: float=0.5, c2: float=0.3, w: float=0.9, n_optim_steps: int=10, n_particles: int=10, n_restarts_optimizer: int=10) -> None:
@@ -75,8 +80,19 @@ class GPR(BaseEstimator):
         """
         optimizer = ps.single.GlobalBestPSO(n_particles=self.n_particles, dimensions=len(init_theta), options=self.options, bounds=bounds)
         f_opt, theta_opt = optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
-
         return theta_opt, f_opt
+
+        
+    def ka_was_pascal_hier_macht(self):    
+        optimizer = "hä"          
+        m = Mesher(func=obj_func)
+        # Make animation
+        animation = plot_contour(pos_history=optimizer.pos_history,
+                        mesher=m,
+                        mark=(0,0))
+        animation.save('mymovie.mp4')
+
+        
         
     def _scoring(self, estimator, X, y):
         y_pred = estimator.predict(X)
@@ -85,3 +101,22 @@ class GPR(BaseEstimator):
 
 def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
     return np.mean((y_true - y_pred) ** 2)
+
+def visualize(X, y, title=None):
+    plt.scatter(X[0], X[1], c=y)
+    plt.colorbar()
+    if title:
+        plt.title(title)
+    plt.show()
+
+def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0):
+    """
+    Generates data sample 1.
+    """
+    X = np.random.rand(n_dims, n)
+    for i in range(n_dims):
+        X[i] = X[i]*(upper[i]-lower[i]) + lower[i]
+    y = target_func(X)
+    y += np.random.normal(0, noise_scale, size=y.shape)
+    
+    return (X,y)
