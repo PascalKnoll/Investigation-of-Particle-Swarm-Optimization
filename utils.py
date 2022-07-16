@@ -115,11 +115,14 @@ def visualize(X, y, title=None):
     plt.show()
 
 
-def visualize_meshgrid(x, y, target_func):
+def visualize_meshgrid(x, y, target_func, title=None):
     X = np.array(np.meshgrid(x, y))
     Z = target_func(X)
     plt.pcolormesh(x,y,Z)
     plt.colorbar()
+    if title:
+        plt.title(title)
+    plt.show()
 
 
 def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0):
