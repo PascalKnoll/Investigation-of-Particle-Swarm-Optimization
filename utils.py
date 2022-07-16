@@ -115,17 +115,16 @@ def visualize(X, y, title=None):
     plt.show()
 
 
-def vis_mashgrid(Z):
-    m = np.arange(-2.5,1.5,0.001)
-    p = np.arange(-1.5,2.5,0.001)
-    X = np.array(np.meshgrid(m, p))
-    plt.pcolormesh(m,p,Z)
+def visualize_meshgrid(x, y, target_func):
+    X = np.array(np.meshgrid(x, y))
+    Z = target_func(X)
+    plt.pcolormesh(x,y,Z)
     plt.colorbar()
 
 
 def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0):
     """
-    Generates data sample 1.
+    Generates data sample.
     """
     X = np.random.rand(n_dims, n)
     for i in range(n_dims):
