@@ -129,7 +129,8 @@ def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0):
     """
     Generates data sample.
     """
-    X = np.random.rand(n_dims, n)
+    rs = np.random.RandomState(42)
+    X = rs.rand(n_dims,n)
     for i in range(n_dims):
         X[i] = X[i]*(upper[i]-lower[i]) + lower[i]
     y = target_func(X)
