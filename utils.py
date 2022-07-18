@@ -62,6 +62,7 @@ class GPR(BaseEstimator):
 
         return self
 
+
     def predict(self, X: np.array) -> np.array:
         """
         :param X: test data
@@ -79,9 +80,9 @@ class GPR(BaseEstimator):
         :param bounds: bounds of theta
         :return: best theta
         """
-        
         f_opt, theta_opt = self.optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
         return theta_opt, f_opt
+
 
     def _scoring(self, estimator, X, y):
         y_pred = estimator.predict(X)
@@ -96,12 +97,12 @@ class GPR(BaseEstimator):
                         mark=(0,0))
         animation.save('mymovie.mp4')
 
-        
-
 
     def plot_history(optimizer):
         plot_cost_history(cost_history=optimizer.cost_history)
         plt.show()
+
+        
 
 def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
     return np.mean((y_true - y_pred) ** 2)
