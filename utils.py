@@ -62,6 +62,7 @@ class GPR(BaseEstimator):
 
         return self
 
+
     def predict(self, X: np.array) -> np.array:
         """
         :param X: test data
@@ -79,9 +80,9 @@ class GPR(BaseEstimator):
         :param bounds: bounds of theta
         :return: best theta
         """
-        
         f_opt, theta_opt = self.optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
         return theta_opt, f_opt
+
 
     def _scoring(self, estimator, X, y):
         y_pred = estimator.predict(X)
@@ -96,12 +97,12 @@ class GPR(BaseEstimator):
                         mark=(0,0))
         animation.save('mymovie.mp4')
 
-        
-
 
     def plot_history(optimizer):
         plot_cost_history(cost_history=optimizer.cost_history)
         plt.show()
+
+        
 
 def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
     return np.mean((y_true - y_pred) ** 2)
@@ -115,19 +116,22 @@ def visualize(X, y, title=None):
     plt.show()
 
 
-def vis_mashgrid(Z):
-    m = np.arange(-2.5,1.5,0.001)
-    p = np.arange(-1.5,2.5,0.001)
-    X = np.array(np.meshgrid(m, p))
-    plt.pcolormesh(m,p,Z)
+def visualize_meshgrid(x, y, target_func, title=None):
+    X = np.array(np.meshgrid(x, y))
+    Z = target_func(X)
+    plt.pcolormesh(x,y,Z)
     plt.colorbar()
+    if title:
+        plt.title(title)
+    plt.show()
 
 
 def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0):
     """
-    Generates data sample 1.
+    Generates data sample.
     """
-    X = np.random.rand(n_dims, n)
+    rs = np.random.RandomState(42)
+    X = rs.rand(n_dims,n)
     for i in range(n_dims):
         X[i] = X[i]*(upper[i]-lower[i]) + lower[i]
     y = target_func(X)
