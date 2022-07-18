@@ -137,6 +137,6 @@ def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0):
     for i in range(n_dims):
         X[i] = X[i]*(upper[i]-lower[i]) + lower[i]
     y = target_func(X)
-    y += np.random.normal(0, noise_scale, size=y.shape)
+    y += rs.normal(0, noise_scale, size=y.shape)
     
     return (X,y)
