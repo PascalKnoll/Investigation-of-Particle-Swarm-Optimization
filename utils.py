@@ -107,6 +107,8 @@ class GPR(BaseEstimator):
 def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
     return np.mean((y_true - y_pred) ** 2)
 
+def root_mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
+    return np.sqrt(np.mean((y_true - y_pred) ** 2))
 
 def visualize(X, y, title=None):
     plt.scatter(X[0], X[1], c=y)

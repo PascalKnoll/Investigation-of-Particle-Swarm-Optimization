@@ -131,3 +131,37 @@ ValueError: Output size (10, 1) is not compatible with broadcast dimensions of i
 2022-07-12 15:45:39,217 - pyswarms.single.global_best - INFO - Optimize for 10 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
 2022-07-12 15:47:15,317 - pyswarms.single.global_best - INFO - Optimize for 10 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
 2022-07-14 15:07:08,534 - root - CRITICAL - This will get logged
+2022-07-18 09:24:06,583 - pyswarms.backend.generators - ERROR - generate_swarm() takes an int for n_particles and dimensions and an array for bounds
+Traceback (most recent call last):
+  File "c:\Users\I538840\Anaconda3\lib\site-packages\pyswarms\backend\generators.py", line 70, in generate_swarm
+    pos = center * np.random.uniform(
+  File "mtrand.pyx", line 1112, in numpy.random.mtrand.RandomState.uniform
+  File "_common.pyx", line 577, in numpy.random._common.cont
+TypeError: 'numpy.float64' object cannot be interpreted as an integer
+2022-07-18 09:32:48,972 - numexpr.utils - INFO - Note: NumExpr detected 16 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2022-07-18 09:32:48,975 - numexpr.utils - INFO - NumExpr defaulting to 8 threads.
+2022-07-18 09:36:53,696 - pyswarms.backend.generators - ERROR - generate_swarm() takes an int for n_particles and dimensions and an array for bounds
+Traceback (most recent call last):
+  File "c:\Users\I538840\Anaconda3\lib\site-packages\pyswarms\backend\generators.py", line 70, in generate_swarm
+    pos = center * np.random.uniform(
+  File "mtrand.pyx", line 1112, in numpy.random.mtrand.RandomState.uniform
+  File "_common.pyx", line 577, in numpy.random._common.cont
+TypeError: 'numpy.float64' object cannot be interpreted as an integer
+2022-07-18 09:44:14,005 - pyswarms.backend.generators - ERROR - generate_swarm() takes an int for n_particles and dimensions and an array for bounds
+Traceback (most recent call last):
+  File "c:\Users\I538840\Anaconda3\lib\site-packages\pyswarms\backend\generators.py", line 70, in generate_swarm
+    pos = center * np.random.uniform(
+  File "mtrand.pyx", line 1112, in numpy.random.mtrand.RandomState.uniform
+  File "_common.pyx", line 577, in numpy.random._common.cont
+TypeError: 'numpy.float64' object cannot be interpreted as an integer
+2022-07-18 09:46:18,143 - numexpr.utils - INFO - Note: NumExpr detected 16 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2022-07-18 09:46:18,148 - numexpr.utils - INFO - NumExpr defaulting to 8 threads.
+2022-07-18 10:45:56,507 - pyswarms.backend.generators - ERROR - generate_swarm() takes an int for n_particles and dimensions and an array for bounds
+Traceback (most recent call last):
+  File "c:\Users\I538840\Anaconda3\lib\site-packages\pyswarms\backend\generators.py", line 70, in generate_swarm
+    pos = center * np.random.uniform(
+  File "mtrand.pyx", line 1112, in numpy.random.mtrand.RandomState.uniform
+  File "_common.pyx", line 577, in numpy.random._common.cont
+TypeError: 'numpy.float64' object cannot be interpreted as an integer
+2022-07-18 10:46:51,188 - numexpr.utils - INFO - Note: NumExpr detected 16 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2022-07-18 10:46:51,196 - numexpr.utils - INFO - NumExpr defaulting to 8 threads.
