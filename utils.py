@@ -109,6 +109,8 @@ class GPR(BaseEstimator):
 def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
     return np.mean((y_true - y_pred) ** 2)
 
+def root_mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
+    return np.sqrt(np.mean((y_true - y_pred) ** 2))
 
 def visualize(X, y, title=None):
     plt.scatter(X[0], X[1], c=y)
@@ -137,6 +139,6 @@ def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0):
     for i in range(n_dims):
         X[i] = X[i]*(upper[i]-lower[i]) + lower[i]
     y = target_func(X)
-    y += np.random.normal(0, noise_scale, size=y.shape)
+    y += rs.normal(0, noise_scale, size=y.shape)
     
     return (X,y)
