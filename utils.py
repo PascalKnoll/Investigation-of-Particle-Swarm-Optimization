@@ -42,7 +42,7 @@ class GPR(BaseEstimator):
                 'n_particles': np.linspace(1, 10, 5)
             }
         
-        clf = GridSearchCV(estimator=self, param_grid=grid, verbose=1, scoring=self.model._scoring, n_jobs=1, error_score='raise')
+        clf = GridSearchCV(estimator=self, param_grid=grid, verbose=1, scoring=self._scoring, n_jobs=1, error_score='raise')
         X = X.T
         y = y[..., None]
         clf = clf.fit(X, y)
@@ -50,7 +50,7 @@ class GPR(BaseEstimator):
         return self
 
 
-    def fit(self, X: np.array, y: np.array) -> None:
+    def fit(self, X: np.array, y: np.array):
         """
         :param X: training data
         :param y: training labels
