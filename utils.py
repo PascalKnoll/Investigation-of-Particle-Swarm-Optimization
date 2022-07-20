@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 class GPR(BaseEstimator):
-    def __init__(self, c1: float=0.5, c2: float=0.3, w: float=0.9, n_optim_steps: int=10, n_particles: int=10, n_restarts_optimizer: int=10, n_dims: int=2) -> None:
+    def __init__(self, kernel=None, c1: float=0.5, c2: float=0.3, w: float=0.9, n_optim_steps: int=1, n_particles: int=10, n_restarts_optimizer: int=10, n_dims: int=2) -> None:
         """
         :param c1: cognitive parameter
         :param c2: social parameter
@@ -22,17 +22,14 @@ class GPR(BaseEstimator):
         self.c1 = c1
         self.c2 = c2
         self.w = w
-        
-
-        self.options = {'c1': c1, 'c2': c2, 'w': w}
 
         self.n_optim_steps = n_optim_steps
         self.n_particles = n_particles
         self.n_restarts_optimizer = n_restarts_optimizer
         self.n_dims = n_dims
 
-        self.model = GaussianProcessRegressor(n_restarts_optimizer=n_restarts_optimizer, optimizer=self._optim)
-        self.optimizer = ps.single.GlobalBestPSO(n_particles=self.n_particles, dimensions=self.n_dims, options=self.options)
+        self.model = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=n_restarts_optimizer, optimizer=self._optim)
+        self.optimizer = ps.single.GlobalBestPSO(n_particles=self.n_particles, dimensions=2, options={'c1': c1, 'c2': c2, 'w': w})
 
     
     def hyper_optimize(self, X, y, grid=None):
@@ -44,7 +41,7 @@ class GPR(BaseEstimator):
                 'n_particles': np.linspace(1, 10, 5)
             }
         
-        clf = GridSearchCV(estimator=self, param_grid=grid, verbose=1, scoring=self._scoring, n_jobs=1)#, error_score='raise')
+        clf = GridSearchCV(estimator=self, param_grid=grid, verbose=1, scoring=self._scoring, n_jobs=1, error_score='raise')
         X = X.T
         y = y[..., None]
         clf = clf.fit(X, y)
@@ -75,14 +72,22 @@ class GPR(BaseEstimator):
         return y
 
 
-    def _optim(self, obj_func: callable, init_theta: np.array, bounds: np.array) -> tuple:
+    def _optim(self, asdf: callable, init_theta: np.array, bounds: np.array) -> tuple:
         """
         :param obj_func: objective function
         :param init_theta: initial theta
         :param bounds: bounds of theta
         :return: best theta
         """
-        f_opt, theta_opt = self.optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=False)
+        def obj_func(thetas, eval_gradient="meh"):
+            errors = []
+            for theta in thetas:
+                errors.append(-self.model.log_marginal_likelihood(theta, clone_kernel=False))
+            return errors
+
+        f_opt, theta_opt = self.optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=True, eval_gradient=True)
+        print(f_opt)
+        print(theta_opt)
         return theta_opt, f_opt
 
 
