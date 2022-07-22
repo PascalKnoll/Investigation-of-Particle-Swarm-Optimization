@@ -8,9 +8,17 @@ from pyswarms.utils.plotters.formatters import Mesher
 from IPython.display import Image
 import matplotlib.pyplot as plt
 
+from scipy.linalg import cho_solve
+from numpy.linalg import cholesky
+from tqdm import tqdm
+
+from numba import njit, jit
+
+
+GPR_CHOLESKY_LOWER = True
 
 class GPR(BaseEstimator):
-    def __init__(self, kernel=None, c1: float=0.5, c2: float=0.3, w: float=0.9, n_optim_steps: int=1, n_particles: int=10, n_restarts_optimizer: int=10, n_dims: int=2) -> None:
+    def __init__(self, kernel=None, c1: float=0.5, c2: float=0.3, w: float=0.9, n_optim_steps: int=20, n_particles: int=10) -> None:
         """
         :param c1: cognitive parameter
         :param c2: social parameter
@@ -22,14 +30,17 @@ class GPR(BaseEstimator):
         self.c1 = c1
         self.c2 = c2
         self.w = w
+        self.kernel = kernel
 
         self.n_optim_steps = n_optim_steps
         self.n_particles = n_particles
-        self.n_restarts_optimizer = n_restarts_optimizer
-        self.n_dims = n_dims
 
-        self.model = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=n_restarts_optimizer, optimizer=self._optim)
-        self.optimizer = ps.single.GlobalBestPSO(n_particles=self.n_particles, dimensions=2, options={'c1': c1, 'c2': c2, 'w': w})
+        self.model = GaussianProcessRegressor(kernel=self.kernel, optimizer=self._optim)
+        theta_dim = len(kernel.theta)
+        self.optimizer = ps.single.GlobalBestPSO(
+            n_particles=self.n_particles, 
+            bounds=([-11.51292546]*theta_dim, [11.51292546]*theta_dim), 
+            dimensions=theta_dim, options={'c1': c1, 'c2': c2, 'w': w})
 
     
     def hyper_optimize(self, X, y, grid=None):
@@ -71,23 +82,52 @@ class GPR(BaseEstimator):
         y = self.model.predict(X)
         return y
 
+    # @njit
+    def asdf(self, thetas):
+        n_batches = thetas.shape[0]
+        errors = np.zeros(thetas.shape[0], dtype=np.float64)
+        for i in tqdm(range(n_batches)):
+            errors[i] = self.obj_func(thetas[i])
+        return errors
+        # return self.obj_func2(thetas)
 
-    def _optim(self, asdf: callable, init_theta: np.array, bounds: np.array) -> tuple:
+    # @njit
+    def obj_func(self, theta):
+        kernel = self.model.kernel_
+        kernel.theta = theta
+        
+        K = kernel(self.model.X_train_)
+
+        K[np.diag_indices_from(K)] += self.model.alpha
+        L = cholesky(K)
+
+        y_train = self.model.y_train_
+        if y_train.ndim == 1:
+            y_train = y_train[:, np.newaxis]
+
+        alpha = cho_solve((L, GPR_CHOLESKY_LOWER), y_train, check_finite=False)
+
+        log_likelihood_dims = -0.5 * np.einsum("ik,ik->k", y_train, alpha)
+        log_likelihood_dims -= np.log(np.diag(L)).sum()
+        log_likelihood_dims -= K.shape[0] / 2 * np.log(2 * np.pi)
+        
+        log_likelihood = log_likelihood_dims.sum()
+
+        return log_likelihood     
+
+        
+
+    def _optim(self, obj_func: callable, init_theta: np.array, bounds: np.array) -> tuple:
         """
         :param obj_func: objective function
         :param init_theta: initial theta
         :param bounds: bounds of theta
-        :return: best theta
+        :return: best theta, best cost
         """
-        def obj_func(thetas, eval_gradient="meh"):
-            errors = []
-            for theta in thetas:
-                errors.append(-self.model.log_marginal_likelihood(theta, clone_kernel=False))
-            return errors
-
-        f_opt, theta_opt = self.optimizer.optimize(obj_func, iters=self.n_optim_steps, verbose=True, eval_gradient=True)
-        print(f_opt)
-        print(theta_opt)
+        f_opt, theta_opt = self.optimizer.optimize(
+            lambda thetas: -np.array([self.model.log_marginal_likelihood(theta) for theta in thetas]), 
+            iters=self.n_optim_steps
+            )
         return theta_opt, f_opt
 
 
@@ -147,3 +187,42 @@ def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0):
     y += rs.normal(0, noise_scale, size=y.shape)
     
     return (X,y)
+
+
+
+def aha(thetas, model):
+    n_batches = thetas.shape[0]
+    kernel = model.kernel_
+    X_train = model.X_train_
+    n_train = X_train.shape[0]
+    y_train = model.y_train_
+    alpha = model.alpha
+    Ks = np.zeros((n_batches, n_train, n_train), dtype=np.float64)
+    for i in range(n_batches):
+        kernel.theta = thetas[i]
+        Ks[i] = kernel(X_train)
+
+    return asdf(thetas, Ks, y_train, alpha)
+
+@jit
+def asdf(thetas, Ks, y_train, alpha):
+    n_batches = thetas.shape[0]
+    errors = np.zeros(thetas.shape[0], dtype=np.float64)   
+    for i in range(n_batches):
+        errors[i] = obj_func(Ks[i], y_train, alpha)
+    return errors
+
+@jit
+def obj_func(K, y_train, alpha):
+    K[np.diag_indices_from(K)] += alpha
+    L = cholesky(K)
+
+    # alpha = cho_solve((L, GPR_CHOLESKY_LOWER), y_train, check_finite=False)
+
+    log_likelihood_dims = -0.5 * np.einsum("ik,ik->k", y_train, alpha)
+    log_likelihood_dims -= np.log(np.diag(L)).sum()
+    log_likelihood_dims -= K.shape[0] / 2 * np.log(2 * np.pi)
+    
+    log_likelihood = log_likelihood_dims.sum()
+
+    return log_likelihood
