@@ -82,6 +82,19 @@ class GPR(BaseEstimator):
         y = self.model.predict(X)
         return y
 
+    def _optim(self, obj_func: callable, init_theta: np.array, bounds: np.array) -> tuple:
+        """
+        :param obj_func: objective function
+        :param init_theta: initial theta
+        :param bounds: bounds of theta
+        :return: best theta, best cost
+        """
+        f_opt, theta_opt = self.optimizer.optimize(
+            lambda thetas: -np.array([self.model.log_marginal_likelihood(theta) for theta in thetas]), 
+            iters=self.n_optim_steps
+            )
+        return theta_opt, f_opt
+
     # @njit
     def asdf(self, thetas):
         n_batches = thetas.shape[0]
@@ -117,18 +130,7 @@ class GPR(BaseEstimator):
 
         
 
-    def _optim(self, obj_func: callable, init_theta: np.array, bounds: np.array) -> tuple:
-        """
-        :param obj_func: objective function
-        :param init_theta: initial theta
-        :param bounds: bounds of theta
-        :return: best theta, best cost
-        """
-        f_opt, theta_opt = self.optimizer.optimize(
-            lambda thetas: -np.array([self.model.log_marginal_likelihood(theta) for theta in thetas]), 
-            iters=self.n_optim_steps
-            )
-        return theta_opt, f_opt
+
 
 
     def _scoring(self, estimator, X, y):
@@ -165,10 +167,10 @@ def visualize(X, y, title=None):
     plt.show()
 
 
-def visualize_meshgrid(x, y, target_func, title=None):
-    X = np.array(np.meshgrid(x, y))
-    Z = target_func(X)
-    plt.pcolormesh(x,y,Z)
+def visualize_meshgrid(x, y, target_func=None, title=None):
+    Xs = np.array(np.meshgrid(x, y))
+    z = np.asarray([target_func(X) for X in Xs])
+    plt.pcolormesh(x, y, z)
     plt.colorbar()
     if title:
         plt.title(title)
