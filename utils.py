@@ -18,7 +18,7 @@ from numba import njit, jit
 GPR_CHOLESKY_LOWER = True
 
 class GPR(BaseEstimator):
-    def __init__(self, kernel=None, c1: float=0.5, c2: float=0.3, w: float=0.9, n_optim_steps: int=20, n_particles: int=10) -> None:
+    def __init__(self, kernel=None, c1: float=0.5, c2: float=0.3, w: float=0.7, n_optim_steps: int=20, n_particles: int=10) -> None:
         """
         :param c1: cognitive parameter
         :param c2: social parameter
@@ -35,7 +35,7 @@ class GPR(BaseEstimator):
         self.n_optim_steps = n_optim_steps
         self.n_particles = n_particles
 
-        self.model = GaussianProcessRegressor(kernel=self.kernel, optimizer=self._optim)
+        self.model = GaussianProcessRegressor(kernel=self.kernel, optimizer=self._optim, alpha=1e-3)
         theta_dim = len(kernel.theta)
         self.optimizer = ps.single.GlobalBestPSO(
             n_particles=self.n_particles, 
@@ -228,3 +228,56 @@ def obj_func(K, y_train, alpha):
     log_likelihood = log_likelihood_dims.sum()
 
     return log_likelihood
+
+from scipy.spatial.distance import pdist, cdist, squareform
+# import kernels
+from sklearn.gaussian_process.kernels import Kernel, StationaryKernelMixin, NormalizedKernelMixin, Hyperparameter
+class HHKZ(StationaryKernelMixin, NormalizedKernelMixin, Kernel):
+    def __init__(
+        self, 
+        length_scale=1.0, 
+        length_scale_bounds=(1e-5, 1e5),
+        # sigma=1.0,
+        # sigma_bounds=(1e-5, 1e5)
+    ):
+        self.length_scale = length_scale
+        self.length_scale_bounds = length_scale_bounds
+        # self.sigma = sigma
+        # self.sigma_bounds = sigma_bounds
+
+    @property
+    def anisotropic(self):
+        return np.iterable(self.length_scale) and len(self.length_scale) > 1
+
+    @property
+    def hyperparameter_length_scale(self):
+        if self.anisotropic:
+            return Hyperparameter(
+                "length_scale",
+                "numeric",
+                self.length_scale_bounds,
+                len(self.length_scale),
+            )
+        return Hyperparameter("length_scale", "numeric", self.length_scale_bounds)
+    
+    # @property
+    # def hyperparameter_sigma(self):
+    #     if self.anisotropic:
+    #         return Hyperparameter(
+    #             "sigma",
+    #             "numeric",
+    #             self.sigma_bounds,
+    #             len(self.sigma),
+    #         )
+    #     return Hyperparameter("sigma", "numeric", self.length_scale_bounds)
+
+    def __call__(self, X, Y=None, eval_gradient=False):
+        X = np.atleast_2d(X)
+        if Y is None:
+            dists = pdist(X * self.length_scale, metric="sqeuclidean")
+            K = np.exp(-0.5 * dists)
+            # convert from upper-triangular matrix to square matrix
+            K = squareform(K)
+            np.fill_diagonal(K, 1)
+
+        return K
