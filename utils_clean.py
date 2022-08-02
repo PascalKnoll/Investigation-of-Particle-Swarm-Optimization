@@ -43,31 +43,35 @@ def de_optimizer(func, init_theta, bounds):
     return res.x, res.fun
 
 
-def rs_optimizer(obj_func, init_theta, bounds):
-    # number of iterations
-    max_its = 10000
-    # optimal thetas
-    theta_opt = []
-    # optimal log likelihood, starts with a very bad value
-    func_max = float("inf")
-    # current log likelihood
-    func_current = 0
-    # current thetas
-    thetas = []
-    rs = np.random.RandomState(42)
+class RSOptim:
+    def __init__(self, max_iter):
+        self.max_iter = max_iter
 
-    for _ in range(0, max_its):
+    def optimize(self, obj_func, init_theta, bounds):
+        # number of iterations
+        max_its = self.max_iter
+        # optimal thetas
+        theta_opt = []
+        # optimal log likelihood, starts with a very bad value
+        func_max = float("inf")
+        # current log likelihood
+        func_current = 0
+        # current thetas
         thetas = []
-        for _ in range(0, init_theta.shape[0]):
-            thetas.append(rs.random.uniform(bounds[0][0],bounds[0][1]))
+        rs = np.random.RandomState(42)
 
-        func_current = obj_func(thetas)[0]
+        for _ in range(0, max_its):
+            thetas = []
+            for _ in range(0, init_theta.shape[0]):
+                thetas.append(rs.uniform(bounds[0][0],bounds[0][1]))
 
-        if func_current < func_max:
-            func_max = func_current
-            theta_opt = thetas
-        
-    return theta_opt, func_max
+            func_current = obj_func(thetas)[0]
+
+            if func_current < func_max:
+                func_max = func_current
+                theta_opt = thetas
+            
+        return theta_opt, func_max
 
 
 class PSOOptim:
@@ -87,3 +91,17 @@ class PSOOptim:
         f_opt, theta_opt = optimizer.optimize(lambda thetas: [obj_func(theta) for theta in thetas])
 
         return theta_opt, f_opt
+
+def visualize_pred_meshgrid(predictor, title):
+    m = np.arange(-2.5,1.5,0.01)
+    p = np.arange(-1.5,2.5,0.01)
+    X = np.array(np.meshgrid(m, p))
+    Y = np.zeros((400,400))
+    for i in range(len(X.T)):
+        Y[i] = predictor.predict(X.T[i]).flatten()
+    plt.pcolormesh(np.array(np.meshgrid(m, p))[0], np.array(np.meshgrid(m, p))[1], Y, cmap="inferno")
+    plt.ylabel("$x_2$")
+    plt.xlabel("$x_1$")
+    plt.colorbar()
+    plt.title(title)
+    plt.show()
