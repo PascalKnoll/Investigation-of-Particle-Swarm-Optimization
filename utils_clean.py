@@ -75,7 +75,7 @@ class PSOOptim:
         self.c1 = c1
         self.c2 = c2
         self.w = w
-        self.n_particles
+        self.n_particles = n_particles
 
     def optimize(self, obj_func, init_theta, bounds):
         theta_dim = len(init_theta)
