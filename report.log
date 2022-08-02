@@ -1566,3 +1566,27 @@ ValueError: Output size (20, 4) is not compatible with broadcast dimensions of i
 2022-08-01 15:15:27,657 - matplotlib.animation - INFO - MovieWriter._run: running command: ffmpeg -f rawvideo -vcodec rawvideo -s 432x288 -pix_fmt rgba -r 2.0 -loglevel error -i pipe: -vcodec h264 -pix_fmt yuv420p -y blockbuster.mp4
 2022-08-01 15:17:04,541 - pyswarms.single.global_best - INFO - Optimize for 50 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.7}
 2022-08-01 15:17:05,724 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 2202.2380573488144, best pos: [-11.02188202  -2.90442602]
+2022-08-02 10:22:50,234 - pyswarms.single.global_best - INFO - Optimize for 50 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.7}
+2022-08-02 10:22:50,996 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 2202.2380573488144, best pos: [6.39056705 6.90625781]
+2022-08-02 10:24:28,856 - pyswarms.single.global_best - INFO - Optimize for 50 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.7}
+2022-08-02 10:24:29,964 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 2202.2380573488144, best pos: [ 1.67484126 -1.24109453]
+2022-08-02 10:24:52,729 - pyswarms.single.global_best - INFO - Optimize for 50 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.7}
+2022-08-02 10:24:53,482 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 2202.2380573488144, best pos: [-7.17377907]
+2022-08-02 14:52:04,331 - matplotlib.animation - INFO - Animation.save using <class 'matplotlib.animation.FFMpegWriter'>
+2022-08-02 14:52:04,335 - matplotlib.animation - INFO - MovieWriter._run: running command: ffmpeg -f rawvideo -vcodec rawvideo -s 432x288 -pix_fmt rgba -r 2.0 -loglevel error -i pipe: -vcodec h264 -pix_fmt yuv420p -y 'Random Search'
+2022-08-02 14:52:04,513 - matplotlib.animation - WARNING - MovieWriter stderr:
+[NULL @ 000002989c7cd780] Unable to find a suitable output format for 'Random Search'
+Random Search: Invalid argument
+
+2022-08-02 14:53:14,682 - matplotlib.animation - INFO - Animation.save using <class 'matplotlib.animation.FFMpegWriter'>
+2022-08-02 14:53:14,686 - matplotlib.animation - INFO - MovieWriter._run: running command: ffmpeg -f rawvideo -vcodec rawvideo -s 432x288 -pix_fmt rgba -r 2.0 -loglevel error -i pipe: -vcodec h264 -pix_fmt yuv420p -y 'Random Search'
+2022-08-02 14:53:14,783 - matplotlib.animation - WARNING - MovieWriter stderr:
+[NULL @ 0000021fa2add780] Unable to find a suitable output format for 'Random Search'
+Random Search: Invalid argument
+
+2022-08-02 14:53:26,027 - matplotlib.animation - INFO - Animation.save using <class 'matplotlib.animation.FFMpegWriter'>
+2022-08-02 14:53:26,031 - matplotlib.animation - INFO - MovieWriter._run: running command: ffmpeg -f rawvideo -vcodec rawvideo -s 432x288 -pix_fmt rgba -r 2.0 -loglevel error -i pipe: -vcodec h264 -pix_fmt yuv420p -y 'Random Search.mp4'
+2022-08-02 14:54:31,929 - matplotlib.animation - INFO - Animation.save using <class 'matplotlib.animation.FFMpegWriter'>
+2022-08-02 14:54:31,930 - matplotlib.animation - INFO - MovieWriter._run: running command: ffmpeg -f rawvideo -vcodec rawvideo -s 432x288 -pix_fmt rgba -r 2.0 -loglevel error -i pipe: -vcodec h264 -pix_fmt yuv420p -y 'Random Search.mp4'
+2022-08-02 15:02:10,658 - matplotlib.animation - INFO - Animation.save using <class 'matplotlib.animation.FFMpegWriter'>
+2022-08-02 15:02:10,660 - matplotlib.animation - INFO - MovieWriter._run: running command: ffmpeg -f rawvideo -vcodec rawvideo -s 432x288 -pix_fmt rgba -r 2.0 -loglevel error -i pipe: -vcodec h264 -pix_fmt yuv420p -y 'Random Search.mp4'
