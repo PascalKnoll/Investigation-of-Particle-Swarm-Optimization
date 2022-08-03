@@ -39,7 +39,7 @@ def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0, random_
     
     return (X,y)
 
-def get_log_likelihood(gpr, bounds=(-10, 10), n=10,):
+def get_likelihood_grids(gpr, bounds=(-10, 10), n=100):
         # visualize the likelihood for each point in the grid, given by the function fun
         x_grid = np.linspace(bounds[0], bounds[1], n)
         y_grid = x_grid
@@ -58,25 +58,44 @@ class Optimizer:
     def optim(self, obj_func, init_theta, bounds):
         raise NotImplementedError
     
-    def visualize_optimization(self, x_grid, y_grid, z, file_path="blockbuster.mp4"):
+    def visualize_optimization(self, x_grid, y_grid, z, file_path="blockbuster.mp4", marker="*"):
         def animate(i):
             ax = plt.axes()
-            ax.pcolormesh(x_grid, y_grid, z)
+            ax.pcolormesh(x_grid, y_grid, z, cmap="inferno")
+            plt.xlabel(r"$\theta_1$", fontsize=14)
+            plt.ylabel(r"$\theta_2$", fontsize=14)
+            plt.text(s=f"Step {i}", x=-5, y=-5)
+            plt.title("Likelihood", y=1.1, fontsize=18)
             for pos in self.pos_hist[i]:
-                ax.scatter(pos[0], pos[1], c='gray')
+                ax.scatter(pos[0], pos[1], c='red', marker=marker)
             return ax,
-
+        if self.pos_hist == []:
+            return
         anim = FuncAnimation(plt.figure(), animate, frames=len(self.pos_hist), interval=500)
         anim.save(file_path)
+
 
 class DEOptim(Optimizer):
     def __init__(self, visualize=False):
         super().__init__()
-        self.visualize = visualize
+        self.optimize = self.optimize_with_visulization if visualize else self.optimize
 
-    def optimize(self, func, init_theta, bounds):
-        res = differential_evolution(lambda x: func(x)[0], bounds, x0=init_theta)
+    def optimize(self, obj_func, init_theta, bounds):
+        res = differential_evolution(lambda x: obj_func(x)[0], bounds, x0=init_theta)
         return res.x, res.fun
+
+    def optimize_with_visulization(self, obj_func, init_theta, bounds):
+        finished = False
+        current_theta = init_theta
+        
+        while not finished:
+            res = differential_evolution(lambda x: obj_func(x)[0], bounds, x0=current_theta, maxiter=1)
+            current_theta = res.x
+            self.pos_hist.append([current_theta])
+            finished = res.success
+
+        return res.x, res.fun
+
 
 class RandomOptim(Optimizer):
     def __init__(self, n_iters, visualize=False):
@@ -114,20 +133,30 @@ class RandomOptim(Optimizer):
 
 
 class PSOOptim(Optimizer):
-    def __init__(self, c1, c2, w, n_particles, visualize=False):
+    def __init__(self, c1, c2, w, n_particles, n_iters=10, visualize=False):
+        super().__init__()
         self.c1 = c1
         self.c2 = c2
         self.w = w
         self.n_particles = n_particles
-
+        self.n_iters = n_iters
+        self.visualize = visualize
+        
     def optimize(self, obj_func, init_theta, bounds):
         theta_dim = len(init_theta)
         optimizer = ps.single.GlobalBestPSO(
             n_particles=self.n_particles, 
-            bounds=(np.asarray(bounds).T), 
-            dimensions=theta_dim, options={'c1': self.c1, 'c2': self.c2, 'w': self.w})
+            bounds=([-11]*theta_dim, [11]*theta_dim),#(np.asarray(bounds).T), 
+            dimensions=theta_dim, 
+            options={'c1': self.c1, 'c2': self.c2, 'w': self.w}
+        )
 
-        f_opt, theta_opt = optimizer.optimize(lambda thetas: [obj_func(theta) for theta in thetas])
+        f_opt, theta_opt = optimizer.optimize(
+            lambda thetas: [obj_func(theta)[0] for theta in thetas], 
+            iters=self.n_iters
+        )
+
         if self.visualize:
             self.pos_hist = optimizer.pos_history
+
         return theta_opt, f_opt
