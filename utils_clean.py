@@ -51,6 +51,9 @@ def get_likelihood_grids(gpr, bounds=(-10, 10), n=100):
 
         return x_grid, y_grid, z
 
+from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
+import matplotlib.image as mpimg
+
 class Optimizer:
     def __init__(self):
         self.pos_hist = []
@@ -58,7 +61,7 @@ class Optimizer:
     def optim(self, obj_func, init_theta, bounds):
         raise NotImplementedError
     
-    def visualize_optimization(self, x_grid, y_grid, z, file_path="blockbuster.mp4", marker="*"):
+    def visualize_optimization(self, x_grid, y_grid, z, file_path="blockbuster.mp4", marker="*", show_zaeff=True):
         def animate(i):
             ax = plt.axes()
             ax.pcolormesh(x_grid, y_grid, z, cmap="inferno")
@@ -67,10 +70,16 @@ class Optimizer:
             plt.text(s=f"Step {i}", x=-5, y=-5)
             plt.title("Likelihood", y=1.1, fontsize=18)
             for pos in self.pos_hist[i]:
-                ax.scatter(pos[0], pos[1], c='red', marker=marker)
+                if show_zaeff:
+                    imagebox = OffsetImage(im_arr, zoom=0.15)
+                    ab = AnnotationBbox(imagebox, (pos[0], pos[1]), frameon=False)
+                    ax.add_artist(ab)
+                else:
+                    ax.scatter(pos[0], pos[1], c='red', marker=marker)
             return ax,
         if self.pos_hist == []:
             return
+        im_arr = plt.imread("zaefferer.png")
         anim = FuncAnimation(plt.figure(), animate, frames=len(self.pos_hist), interval=500)
         anim.save(file_path)
 
