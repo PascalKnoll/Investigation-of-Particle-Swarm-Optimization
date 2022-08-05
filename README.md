@@ -2,6 +2,8 @@
 
 *Repository for lecture "Applied Optimisation Techniques" exam at DHBW Ravensburg*
 
+### BY TOM ZEHLE, NICK HILLEBRAND, PASCAL KNOLL AND TIMO HEISS
+
 The movements of swarms, whether of birds or fish, have always been a fascinating phenomenon of nature. They consist of individual animals and yet seem to move as a large whole.  The animals seem to be arranged randomly and yet the overall movement is precisely synchronised. And as if by some magical power, the swarm seems to be controlled by a central controlling authority.
 
 The idea of Particle Swarm Optimisation (PSO) is based on this concept (cf. Kennedy and Eberhart, 1995). This optimisation algorithm is subject of the research of this project. Specifically, the optimisation problem of Maximum Likelihood Estimation (MLE) for Gaussian Process Models (GPM) is considered. This problem is to be solved with the help of PSO, whereby the functioning and suitability of the optimisation algorithm is empirically investigated.
