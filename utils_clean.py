@@ -160,7 +160,7 @@ class RandomOptim(Optimizer):
 
 
 class PSOOptim(Optimizer):
-    def __init__(self, c1=0.5, c2=0.3, w=0.9, n_particles=10, n_iters=10, visualize=False):
+    def __init__(self, c1=0.5, c2=0.3, w=0.9, n_particles=10, n_iters=10, init_pos=None, visualize=False):
         super().__init__()
         self.c1 = c1
         self.c2 = c2
@@ -168,6 +168,7 @@ class PSOOptim(Optimizer):
         self.n_particles = n_particles
         self.n_iters = n_iters
         self.visualize = visualize
+        self.init_pos = init_pos
         
     def optimize(self, obj_func, init_theta, bounds):
         theta_dim = len(init_theta)
@@ -175,6 +176,7 @@ class PSOOptim(Optimizer):
             n_particles=self.n_particles, 
             bounds=([-11]*theta_dim, [11]*theta_dim),#(np.asarray(bounds).T), 
             dimensions=theta_dim, 
+            init_pos=self.init_pos,
             options={'c1': self.c1, 'c2': self.c2, 'w': self.w}
         )
 
