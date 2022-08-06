@@ -125,10 +125,11 @@ class DEOptim(Optimizer):
 
 
 class RandomOptim(Optimizer):
-    def __init__(self, maxiter, visualize=False):
+    def __init__(self, maxiter, visualize=False, random_state=42):
         super().__init__()
         self.maxiter = maxiter
         self.visualize = visualize
+        self.random_state = random_state
 
     def optimize(self, obj_func, init_theta, bounds):
         # optimal thetas
@@ -139,7 +140,7 @@ class RandomOptim(Optimizer):
         func_current = 0
         # current thetas
         thetas = []
-        rs = np.random.RandomState(42)
+        rs = np.random.RandomState(self.random_state)
         for _ in range(0, self.maxiter):
             thetas = []
             for _ in range(0, init_theta.shape[0]):
