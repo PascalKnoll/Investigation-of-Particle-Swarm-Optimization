@@ -23,7 +23,20 @@ def visualize_meshgrid(x, y, target_func, title=None):
     plt.colorbar()
     if title:
         plt.title(title)
-    plt.show()
+
+
+def visualize_pred_meshgrid(predictor, title):
+    m = np.arange(-2.5,1.5,0.01)
+    p = np.arange(-1.5,2.5,0.01)
+    X = np.array(np.meshgrid(m, p))
+    Y = np.zeros((400,400))
+    for i in range(len(X.T)):
+        Y[i] = predictor.predict(X.T[i]).flatten()
+    plt.pcolormesh(np.array(np.meshgrid(m, p))[0], np.array(np.meshgrid(m, p))[1], Y, cmap="inferno")
+    plt.ylabel("$x_2$")
+    plt.xlabel("$x_1$")
+    plt.colorbar()
+    plt.title(title)
 
 
 def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0, random_state=42):
@@ -39,7 +52,7 @@ def generate_sample(n, n_dims, lower, upper, target_func, noise_scale=0, random_
     
     return (X,y)
 
-def get_likelihood_grids(gpr, bounds=(-10, 10), n=100):
+def get_likelihood_grids(gpr, bounds=(-11.5, 11.5), n=100):
         # visualize the likelihood for each point in the grid, given by the function fun
         x_grid = np.linspace(bounds[0], bounds[1], n)
         y_grid = x_grid
@@ -64,6 +77,8 @@ class Optimizer:
     def visualize_optimization(self, x_grid, y_grid, z, file_path="blockbuster.mp4", marker="*", show_zaeff=True):
         def animate(i):
             ax = plt.axes()
+            plt.cla()
+            # plt.clf()
             ax.pcolormesh(x_grid, y_grid, z, cmap="inferno")
             plt.xlabel(r"$\theta_1$", fontsize=14)
             plt.ylabel(r"$\theta_2$", fontsize=14)
@@ -80,17 +95,20 @@ class Optimizer:
         if self.pos_hist == []:
             return
         im_arr = plt.imread("zaefferer.png")
-        anim = FuncAnimation(plt.figure(), animate, frames=len(self.pos_hist), interval=500)
+        fig = plt.figure(dpi=600)
+        anim = FuncAnimation(fig, animate, frames=len(self.pos_hist), interval=500)
         anim.save(file_path)
 
 
 class DEOptim(Optimizer):
-    def __init__(self, visualize=False):
+    def __init__(self, visualize=False, maxiter=10, popsize=10):
         super().__init__()
         self.optimize = self.optimize_with_visulization if visualize else self.optimize
+        self.maxiter = maxiter
+        self.popsize = popsize
 
     def optimize(self, obj_func, init_theta, bounds):
-        res = differential_evolution(lambda x: obj_func(x)[0], bounds, x0=init_theta)
+        res = differential_evolution(lambda x: obj_func(x)[0], bounds, x0=None, maxiter=self.maxiter, popsize=self.popsize)
         return res.x, res.fun
 
     def optimize_with_visulization(self, obj_func, init_theta, bounds):
@@ -107,10 +125,11 @@ class DEOptim(Optimizer):
 
 
 class RandomOptim(Optimizer):
-    def __init__(self, n_iters, visualize=False):
+    def __init__(self, maxiter, visualize=False, random_state=42):
         super().__init__()
-        self.n_iters = n_iters
+        self.maxiter = maxiter
         self.visualize = visualize
+        self.random_state = random_state
 
     def optimize(self, obj_func, init_theta, bounds):
         # optimal thetas
@@ -121,8 +140,8 @@ class RandomOptim(Optimizer):
         func_current = 0
         # current thetas
         thetas = []
-        rs = np.random.RandomState(42)
-        for _ in range(0, self.n_iters):
+        rs = np.random.RandomState(self.random_state)
+        for _ in range(0, self.maxiter):
             thetas = []
             for _ in range(0, init_theta.shape[0]):
                 thetas.append(rs.uniform(bounds[0][0],bounds[0][1]))
@@ -142,7 +161,7 @@ class RandomOptim(Optimizer):
 
 
 class PSOOptim(Optimizer):
-    def __init__(self, c1, c2, w, n_particles, n_iters=10, visualize=False):
+    def __init__(self, c1=0.5, c2=0.3, w=0.9, n_particles=10, n_iters=10, init_pos=None, visualize=False):
         super().__init__()
         self.c1 = c1
         self.c2 = c2
@@ -150,6 +169,7 @@ class PSOOptim(Optimizer):
         self.n_particles = n_particles
         self.n_iters = n_iters
         self.visualize = visualize
+        self.init_pos = init_pos
         
     def optimize(self, obj_func, init_theta, bounds):
         theta_dim = len(init_theta)
@@ -157,6 +177,7 @@ class PSOOptim(Optimizer):
             n_particles=self.n_particles, 
             bounds=([-11]*theta_dim, [11]*theta_dim),#(np.asarray(bounds).T), 
             dimensions=theta_dim, 
+            init_pos=self.init_pos,
             options={'c1': self.c1, 'c2': self.c2, 'w': self.w}
         )
 
