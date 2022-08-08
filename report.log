@@ -1803,3 +1803,17 @@ Videos/DE.mp4: No such file or directory
 2022-08-07 16:24:06,788 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 34147.004178622126, best pos: [-1.03798762 -1.09818016]
 2022-08-07 16:24:08,722 - pyswarms.single.global_best - INFO - Optimize for 100 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
 2022-08-07 16:24:09,953 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 34146.9772615004, best pos: [-1.04009223 -1.09751669]
+2022-08-08 08:35:34,876 - pyswarms.single.global_best - INFO - Optimize for 10 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
+2022-08-08 08:35:35,003 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 39872.72138047197, best pos: [-1.37245616 -1.4212421 ]
+2022-08-08 08:35:43,028 - pyswarms.single.global_best - INFO - Optimize for 10 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
+2022-08-08 08:35:43,177 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 37044.62716271126, best pos: [-0.90434756 -1.48679521]
+2022-08-08 08:35:43,188 - pyswarms.single.global_best - INFO - Optimize for 10 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
+2022-08-08 08:35:43,312 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 39744.81690594094, best pos: [-1.15736032 -1.57915934]
+2022-08-08 08:35:43,323 - pyswarms.single.global_best - INFO - Optimize for 10 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
+2022-08-08 08:35:43,458 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 36267.52689863128, best pos: [-0.8565694  -1.36792789]
+2022-08-08 08:35:43,469 - pyswarms.single.global_best - INFO - Optimize for 10 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
+2022-08-08 08:35:43,606 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 47040.21718742201, best pos: [-0.27576174 -2.63511875]
+2022-08-08 08:35:43,620 - pyswarms.single.global_best - INFO - Optimize for 10 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
+2022-08-08 08:35:43,751 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 34516.60462227665, best pos: [-1.10545619 -1.00340314]
+2022-08-08 08:35:43,760 - pyswarms.single.global_best - INFO - Optimize for 10 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
+2022-08-08 08:35:43,893 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 35667.96142874959, best pos: [-1.22466309 -1.20885515]
