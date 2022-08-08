@@ -1802,3 +1802,4 @@ Videos/DE.mp4: No such file or directory
 2022-08-07 16:24:05,520 - pyswarms.single.global_best - INFO - Optimize for 100 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
 2022-08-07 16:24:06,788 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 34147.004178622126, best pos: [-1.03798762 -1.09818016]
 2022-08-07 16:24:08,722 - pyswarms.single.global_best - INFO - Optimize for 100 iters with {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
+2022-08-07 16:24:09,953 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 34146.9772615004, best pos: [-1.04009223 -1.09751669]
