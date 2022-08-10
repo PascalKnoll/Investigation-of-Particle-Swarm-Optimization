@@ -2,7 +2,7 @@
 
 *Repository for lecture "Applied Optimisation Techniques" exam at DHBW Ravensburg*
 
-### BY TOM ZEHLE, NICK HILLEBRAND, PASCAL KNOLL AND TIMO HEISS
+### by Timo Heiß, Tom Zehle, Nick Hillebrand and Pascal Knoll
 
 The movements of swarms, whether of birds or fish, have always been a fascinating phenomenon of nature. They consist of individual animals and yet seem to move as a large whole.  The animals seem to be arranged randomly and yet the overall movement is precisely synchronised. And as if by some magical power, the swarm seems to be controlled by a central controlling authority.
 
