@@ -175,7 +175,7 @@ class PSOOptim(Optimizer):
         theta_dim = len(init_theta)
         optimizer = ps.single.GlobalBestPSO(
             n_particles=self.n_particles, 
-            bounds=([-11]*theta_dim, [11]*theta_dim),#(np.asarray(bounds).T), 
+            bounds=([-11]*theta_dim, [11]*theta_dim),
             dimensions=theta_dim, 
             init_pos=self.init_pos,
             options={'c1': self.c1, 'c2': self.c2, 'w': self.w}
@@ -183,7 +183,8 @@ class PSOOptim(Optimizer):
 
         f_opt, theta_opt = optimizer.optimize(
             lambda thetas: [obj_func(theta)[0] for theta in thetas], 
-            iters=self.n_iters
+            iters=self.n_iters,
+            verbose=False
         )
 
         if self.visualize:
