@@ -26,7 +26,7 @@ The results of the research are described in the corresponding paper, which can 
 **[3. Empirical Research](#heading--3)**
 
   * [3.1. Implementation](#heading--3-1)
-  * [3.2. Comparison to other Optimization Algorithms]([#heading--3-2](#https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/AOT_Notebook_ch320.ipynb))
+  * [3.2. Comparison to other Optimization Algorithms]([#heading--3-2](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/AOT_Notebook_ch320.ipynb)
   * [3.3. Expanded Research](#heading--3-3)
     * [3.3.1. Variation in Number of Samples](#heading--3-3-1)
     * [3.3.2. Variation in Number of Dimensions](#heading--3-3-2)
