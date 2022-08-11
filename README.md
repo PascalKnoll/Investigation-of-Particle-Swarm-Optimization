@@ -1,6 +1,6 @@
 # Investigation of Particle Swarm Optimisation for the Optimisation of Gaussian Process Models
 
-*Repository for lecture "Applied Optimisation Techniques" exam at DHBW Ravensburg*
+*Repository for lecture ["Applied Optimisation Techniques" exam at DHBW Ravensburg](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/Projektbeschreibung.Rmd)*
 
 ### by [Timo Heiß](https://www.linkedin.com/in/timo-hei%C3%9F/), [Tom Zehle](https://www.linkedin.com/in/tom-zehle/), [Nick Hillebrand](https://www.linkedin.com/in/nick-hillebrand-395466218/) and [Pascal Knoll](https://www.linkedin.com/in/knoll-pascal/)
 
@@ -25,15 +25,15 @@ The results of the research are described in the corresponding paper, which can 
   
 **[3. Empirical Research](#heading--3)**
 
-  * [3.1. Implementation](#heading--3-1)
+  * [3.1. Implementation](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization)
   * [3.2. Comparison to other Optimization Algorithms](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/AOT_Notebook_ch320.ipynb)
   * [3.3. Expanded Research](#heading--3-3)
-    * [3.3.1. Variation in Number of Samples](#heading--3-3-1)
-    * [3.3.2. Variation in Number of Dimensions](#heading--3-3-2)
-    * [3.3.3. Variation of Groundtruth](#heading--3-3-3)
-    * [3.3.4. Influence of Noise](#heading--3-3-4)
-    * [3.3.5. Overall Evaluation](#heading--3-3-5)
-  * [3.4. Hyperparameter Optimization for PSO](#heading--3-4)
+    * [3.3.1. Variation in Number of Samples](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/AOT_Notebook_ch331.ipynb)
+    * [3.3.2. Variation in Number of Dimensions](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/AOT_Notebook_ch332.ipynb)
+    * [3.3.3. Variation of Groundtruth](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/AOT_Notebook_ch333.ipynb)
+    * [3.3.4. Influence of Noise](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/AOT_Notebook_ch334.ipynb)
+    * [3.3.5. Overall Evaluation](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/AOT_Notebook_ch335.ipynb)
+  * [3.4. Hyperparameter Optimization for PSO](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/AOT_Notebook_ch340.ipynb)
   
 **[4. Conclusion](#heading--4)**
 
