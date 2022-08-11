@@ -85,16 +85,10 @@ class Optimizer:
             plt.text(s=f"Step {i}", x=-5, y=-5)
             plt.title("Likelihood", y=1.1, fontsize=18)
             for pos in self.pos_hist[i]:
-                if show_zaeff:
-                    imagebox = OffsetImage(im_arr, zoom=0.15)
-                    ab = AnnotationBbox(imagebox, (pos[0], pos[1]), frameon=False)
-                    ax.add_artist(ab)
-                else:
                     ax.scatter(pos[0], pos[1], c='red', marker=marker)
             return ax,
         if self.pos_hist == []:
             return
-        im_arr = plt.imread("zaefferer.png")
         fig = plt.figure(dpi=600)
         anim = FuncAnimation(fig, animate, frames=len(self.pos_hist), interval=500)
         anim.save(file_path)
