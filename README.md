@@ -12,6 +12,32 @@ First, an in-depth, empirical investigation of the optimisation algorithm PSO is
 
 The results of the research are described in the corresponding paper, which can be found in this repository as soon as it is finished.
 
+---
+
+### Table of contents
+
+ **[1. Introduction](#heading--1)**
+
+**[2. Theoretical Foundations](#heading--2)**
+
+  * [2.1. Gaussian Process Model and Maximum Likelihood Estimation](#heading--2-1)
+  * [2.2. Particle Swarm Optimization](#heading--2-2)
+  
+**[3. Empirical Research](#heading--3)**
+
+  * [3.1. Implementation](#heading--3-1)
+  * [3.2. Comparison to other Optimization Algorithms](#heading--3-2)
+  * [3.3. Expanded Research](#heading--3-3)
+    * [3.3.1. Variation in Number of Samples](#heading--3-3-1)
+    * [3.3.2. Variation in Number of Dimensions](#heading--3-3-2)
+    * [3.3.3. Variation of Groundtruth](#heading--3-3-3)
+    * [3.3.4. Influence of Noise](#heading--3-3-4)
+    * [3.3.5. Overall Evaluation](#heading--3-3-5)
+  * [3.4. Hyperparameter Optimization for PSO](#heading--3-4)
+  
+**[4. Conclusion](#heading--4)**
+
+---
 
 ### Literature:
 
