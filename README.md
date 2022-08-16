@@ -12,6 +12,7 @@ First, an in-depth, empirical investigation of the optimisation algorithm PSO is
 
 The results of the research are described and evaluated in the corresponding paper, which can also be found in this repository. The outline of this paper is shown below. In case there is a corresponding notebook for a chapter on this repository, the link will directly lead to this notebook.
 
+![plot](https://github.com/PascalKnoll/Investigation-of-Particle-Swarm-Optimization/blob/main/Plots/likelihood_landscape.png)
 ---
 
 ### Table of contents
